@@ -8,16 +8,21 @@ import (
 )
 
 func handleConn(conn net.Conn) {
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			log.Println("Error closing connection: ", err.Error())
+		}
+	}()
 	buffer := make([]byte, 1024)
-	_, err := conn.Read(buffer)
-	if err != nil {
-		log.Fatal("Error reading from connection: ", err.Error())
-	}
-	log.Println("Received: ", string(buffer))
-	conn.Write([]byte("+PONG\r\n"))
-	err = conn.Close()
-	if err != nil {
-		log.Println("Error closing connection: ", err.Error())
+	for {
+		_, err := conn.Read(buffer)
+		if err != nil {
+			log.Println("Error reading from connection: ", err.Error())
+			break
+		}
+		log.Println("Received: ", string(buffer))
+		conn.Write([]byte("+PONG\r\n"))
 	}
 }
 
