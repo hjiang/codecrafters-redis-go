@@ -15,6 +15,10 @@ func handleConn(conn net.Conn) {
 	}
 	log.Println("Received: ", string(buffer))
 	conn.Write([]byte("+PONG\r\n"))
+	err = conn.Close()
+	if err != nil {
+		log.Println("Error closing connection: ", err.Error())
+	}
 }
 
 func main() {
